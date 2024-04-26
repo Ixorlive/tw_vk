@@ -12,5 +12,4 @@ logger:
 postgres:
   pool_max: 2
   # it must be in ENV!
-  user: 'vk'
-  password: 'vk'
+  url: 'url'

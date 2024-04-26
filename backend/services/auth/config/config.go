@@ -27,10 +27,8 @@ type (
 
 	// PG -.
 	PG struct {
-		User     string `env-required:"true" yaml:"user" env:"POSTGRES_USER"`
-		Password string `env-required:"true" yaml:"password" env:"POSTGRES_PASSWORD"`
-		PoolMax  int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
-		URL      string `env-required:"true"                 env:"PG_URL"`
+		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
+		URL     string `env-required:"true" yaml:"url"      env:"PG_URL"`
 	}
 )
 
