@@ -8,6 +8,10 @@ import (
 
 type JWTValidator struct{}
 
+func NewJWTValidator() JWTValidator {
+	return JWTValidator{}
+}
+
 func (v *JWTValidator) ValidateToken(tokenString string) (string, error) {
 	claims := &Claims{}
 

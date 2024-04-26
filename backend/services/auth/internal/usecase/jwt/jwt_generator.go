@@ -11,8 +11,8 @@ type JWTGenerator struct {
 	tokenExpireAfter time.Duration
 }
 
-func NewJWTGenerator(signingMethod jwt.SigningMethod) *JWTGenerator {
-	return &JWTGenerator{
+func NewJWTGenerator(signingMethod jwt.SigningMethod) JWTGenerator {
+	return JWTGenerator{
 		signingMethod:    signingMethod,
 		tokenExpireAfter: time.Hour * 24,
 	}
