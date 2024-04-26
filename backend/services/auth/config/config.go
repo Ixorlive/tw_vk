@@ -7,7 +7,10 @@ import (
 
 type (
 	Config struct {
-		App `yml:"app"`
+		App  `yml:"app"`
+		HTTP `yaml:"http"`
+		Log  `yaml:"logger"`
+		PG   `yaml:"postgres"`
 	}
 	// App -.
 	App struct {
