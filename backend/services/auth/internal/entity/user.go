@@ -1,6 +1,6 @@
 package entity
 
 type User struct {
-	login    string `json:"login"`
-	password string `json:"password"`
+	Login    string `json:"login"`
+	Password string `json:"password"`
 }
