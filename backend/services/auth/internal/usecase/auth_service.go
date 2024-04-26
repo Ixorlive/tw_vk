@@ -1,7 +1,10 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/entity"
+	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/usecase/crypto"
 	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/usecase/jwt"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"golang.org/x/net/context"
@@ -22,18 +25,15 @@ func NewAuthService(repo UserRepo) AuthService {
 }
 
 func (a *BasicAuthService) Auth(ctx context.Context, user entity.User) (*jwt.AccessToken, error) {
-	userExists, err := a.repo.UserExists(ctx, user, false)
+	foundUser, err := a.repo.FindByLogin(ctx, user.Login)
 	if err != nil {
 		return nil, err
 	}
-	if userExists {
-		token, err := a.jwtGenerator.Generate(user.Login)
-		if err != nil {
-			return nil, err
-		}
-		return token, nil
+	if foundUser.Login == "" || crypto.CheckPasswordHash(user.Password, foundUser.Password) {
+		return nil, fmt.Errorf("Incorrect Login or Password")
 	}
-	return nil, err
+	jwtToken, err := a.jwtGenerator.Generate(user.Login)
+	return jwtToken, nil
 }
 
 func (a *BasicAuthService) AuthByToken(ctx context.Context, jwtToken string) (entity.User, error) {
@@ -45,14 +45,18 @@ func (a *BasicAuthService) AuthByToken(ctx context.Context, jwtToken string) (en
 }
 
 func (a *BasicAuthService) Register(ctx context.Context, newUser entity.User) (RegistrationStatus, error) {
-	userExists, err := a.repo.UserExists(ctx, newUser, true)
+	foundUser, err := a.repo.FindByLogin(ctx, newUser.Login)
 	if err != nil {
 		return Error, err
 	}
-	if userExists {
+	if foundUser.Login != "" {
 		return UserExists, nil
 	}
-	inserted, err := a.repo.AddUser(ctx, newUser)
+	hashPwd, err := crypto.HashPassword(newUser.Password)
+	if err != nil {
+		return 0, fmt.Errorf("error generate hash for password %s: %w", newUser.Password, err)
+	}
+	inserted, err := a.repo.AddUser(ctx, entity.User{Login: newUser.Login, Password: hashPwd})
 	if err != nil {
 		return Error, err
 	}

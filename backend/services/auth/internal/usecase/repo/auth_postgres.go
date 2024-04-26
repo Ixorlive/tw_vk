@@ -4,50 +4,57 @@ import (
 	"fmt"
 
 	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/entity"
+	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/usecase"
 	"github.com/Ixorlive/tw_vk/backend/services/auth/pkg/postgres"
 	"github.com/Masterminds/squirrel"
 	"golang.org/x/net/context"
 )
 
-type UserRepo struct {
+type PGUserRepo struct {
 	*postgres.Postgres
 }
 
-func New(pg *postgres.Postgres) *UserRepo {
-	return &UserRepo{pg}
+func New(pg *postgres.Postgres) usecase.UserRepo {
+	return &PGUserRepo{pg}
 }
 
-func (r *UserRepo) UserExists(ctx context.Context, user entity.User, onlyLogin bool) (bool, error) {
-	builder := r.Builder.
-		Select("1").
-		From("User").
-		Where(squirrel.Eq{"login": user.Login})
+func (r *PGUserRepo) FindByLogin(ctx context.Context, login string) (entity.User, error) {
+	query, _, err := r.Builder.
+		Select("login", "password").
+		From("Users").
+		Where(squirrel.Eq{"login": login}).
+		ToSql()
 
-	if !onlyLogin {
-		builder = builder.Where(squirrel.Eq{"password": user.Password})
-	}
-	query, _, err := builder.Limit(1).ToSql()
+	var user entity.User
 
 	if err != nil {
-		return false, fmt.Errorf("error building query: %w", err)
+		return user, fmt.Errorf("error building query: %w", err)
 	}
 	rows, err := r.Pool.Query(ctx, query)
 	if err != nil {
-		return false, fmt.Errorf("error executing query: %w", err)
+		return user, fmt.Errorf("error executing query: %w", err)
 	}
 	defer rows.Close()
 
-	exists := rows.Next()
-	if exists {
-		return true, nil
+	// user can be not found - return empty User
+	for rows.Next() {
+		var lg, password string
+		err = rows.Scan(&lg, &password)
+		if err != nil {
+			return user, fmt.Errorf("error scanning row: %w", err)
+		}
+		user.Login = lg
+		user.Password = password
+		break
 	}
 	if err := rows.Err(); err != nil {
-		return false, fmt.Errorf("error reading query results: %w", err)
+		return user, fmt.Errorf("error reading rows: %w", err)
 	}
-	return false, nil
+
+	return user, nil
 }
 
-func (r *UserRepo) AddUser(ctx context.Context, user entity.User) (bool, error) {
+func (r *PGUserRepo) AddUser(ctx context.Context, user entity.User) (bool, error) {
 	query, _, err := r.Builder.Insert("Users").Columns("login", "password").
 		Values(user.Login, user.Password).ToSql()
 	if err != nil {

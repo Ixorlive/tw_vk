@@ -24,7 +24,7 @@ type (
 	}
 
 	UserRepo interface {
-		UserExists(context.Context, entity.User /* check only login */, bool) (bool, error)
+		FindByLogin(context.Context, string) (entity.User, error)
 		AddUser(context.Context, entity.User) (bool, error)
 	}
 )
