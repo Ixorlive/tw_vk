@@ -1,0 +1,16 @@
+app:
+  name: 'auth'
+  version: '1.0.0'
+
+http:
+  port: '8082'
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'go-clean-template'
+
+postgres:
+  pool_max: 2
+  # it must be in ENV!
+  user: 'vk'
+  password: 'vk'
