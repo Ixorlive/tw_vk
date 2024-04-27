@@ -1,0 +1,218 @@
+definitions:
+  entity.Note:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /notes:
+    get:
+      description: Retrieves all notes for a specific user within a specified date
+        range.
+      parameters:
+      - description: User ID
+        in: query
+        name: userID
+        required: true
+        type: integer
+      - description: Start date (RFC3339 format)
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: End date (RFC3339 format)
+        in: query
+        name: end
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of notes within the date range
+          schema:
+            items:
+              $ref: '#/definitions/entity.Note'
+            type: array
+        "400":
+          description: Bad request if date parameters are invalid
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error if there is a problem retrieving notes
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get notes by date range
+      tags:
+      - Notes
+    post:
+      consumes:
+      - application/json
+      description: Creates a new note with the given content and user ID.
+      parameters:
+      - description: Note Content
+        in: body
+        name: note
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Note'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Note successfully created
+          schema:
+            $ref: '#/definitions/entity.Note'
+        "400":
+          description: Bad request if the JSON body cannot be parsed
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error if there is a problem creating the note
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a note
+      tags:
+      - Notes
+  /notes/{id}:
+    delete:
+      description: Deletes a note identified by its ID.
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User ID of the note owner
+        in: query
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Note successfully deleted
+        "500":
+          description: Internal Server Error if there is a problem deleting the note
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a note
+      tags:
+      - Notes
+    get:
+      description: Retrieves a note by its ID for a specific user.
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User ID of the note owner
+        in: query
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Note found and returned
+          schema:
+            $ref: '#/definitions/entity.Note'
+        "500":
+          description: Internal Server Error if there is a problem retrieving the
+            note
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a note by ID
+      tags:
+      - Notes
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing note identified by its ID with new content.
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Note Content
+        in: body
+        name: note
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Note'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Note successfully updated
+          schema:
+            $ref: '#/definitions/entity.Note'
+        "400":
+          description: Bad request if the JSON body cannot be parsed
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error if there is a problem updating the note
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a note
+      tags:
+      - Notes
+  /users/{userID}/notes:
+    get:
+      description: Retrieves all notes for a specific user.
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of notes owned by the user
+          schema:
+            items:
+              $ref: '#/definitions/entity.Note'
+            type: array
+        "500":
+          description: Internal Server Error if there is a problem retrieving notes
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get notes by user ID
+      tags:
+      - Notes
+swagger: "2.0"

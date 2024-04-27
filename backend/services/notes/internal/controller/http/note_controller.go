@@ -27,6 +27,16 @@ func (nc *NoteController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/notes", nc.getNotesByDateRangeHandler)
 }
 
+// @Summary Create a note
+// @Description Creates a new note with the given content and user ID.
+// @Tags Notes
+// @Accept json
+// @Produce json
+// @Param note body entity.Note true "Note Content"
+// @Success 201 {object} entity.Note "Note successfully created"
+// @Failure 400 {object} map[string]string "Bad request if the JSON body cannot be parsed"
+// @Failure 500 {object} map[string]string "Internal Server Error if there is a problem creating the note"
+// @Router /notes [post]
 func (nc *NoteController) createNoteHandler(c *gin.Context) {
 	var note entity.Note
 	if err := c.ShouldBindJSON(&note); err != nil {
@@ -43,6 +53,17 @@ func (nc *NoteController) createNoteHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, result)
 }
 
+// @Summary Update a note
+// @Description Updates an existing note identified by its ID with new content.
+// @Tags Notes
+// @Accept json
+// @Produce json
+// @Param id path int true "Note ID"
+// @Param note body entity.Note true "Updated Note Content"
+// @Success 200 {object} entity.Note "Note successfully updated"
+// @Failure 400 {object} map[string]string "Bad request if the JSON body cannot be parsed"
+// @Failure 500 {object} map[string]string "Internal Server Error if there is a problem updating the note"
+// @Router /notes/{id} [put]
 func (nc *NoteController) updateNoteHandler(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var note entity.Note
@@ -60,6 +81,15 @@ func (nc *NoteController) updateNoteHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary Delete a note
+// @Description Deletes a note identified by its ID.
+// @Tags Notes
+// @Produce json
+// @Param id path int true "Note ID"
+// @Param userID query int true "User ID of the note owner"
+// @Success 200 "Note successfully deleted"
+// @Failure 500 {object} map[string]string "Internal Server Error if there is a problem deleting the note"
+// @Router /notes/{id} [delete]
 func (nc *NoteController) deleteNoteHandler(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	userID, _ := strconv.Atoi(c.Query("userID"))
@@ -72,6 +102,15 @@ func (nc *NoteController) deleteNoteHandler(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// @Summary Get a note by ID
+// @Description Retrieves a note by its ID for a specific user.
+// @Tags Notes
+// @Produce json
+// @Param id path int true "Note ID"
+// @Param userID query int true "User ID of the note owner"
+// @Success 200 {object} entity.Note "Note found and returned"
+// @Failure 500 {object} map[string]string "Internal Server Error if there is a problem retrieving the note"
+// @Router /notes/{id} [get]
 func (nc *NoteController) getNoteByIDHandler(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	userID, _ := strconv.Atoi(c.Query("userID"))
@@ -85,6 +124,14 @@ func (nc *NoteController) getNoteByIDHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// @Summary Get notes by user ID
+// @Description Retrieves all notes for a specific user.
+// @Tags Notes
+// @Produce json
+// @Param userID path int true "User ID"
+// @Success 200 {array} entity.Note "List of notes owned by the user"
+// @Failure 500 {object} map[string]string "Internal Server Error if there is a problem retrieving notes"
+// @Router /users/{userID}/notes [get]
 func (nc *NoteController) getNotesByUserIDHandler(c *gin.Context) {
 	userID, _ := strconv.Atoi(c.Param("userID"))
 
@@ -97,6 +144,17 @@ func (nc *NoteController) getNotesByUserIDHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, results)
 }
 
+// @Summary Get notes by date range
+// @Description Retrieves all notes for a specific user within a specified date range.
+// @Tags Notes
+// @Produce json
+// @Param userID query int true "User ID"
+// @Param start query string true "Start date (RFC3339 format)"
+// @Param end query string true "End date (RFC3339 format)"
+// @Success 200 {array} entity.Note "List of notes within the date range"
+// @Failure 400 {object} map[string]string "Bad request if date parameters are invalid"
+// @Failure 500 {object} map[string]string "Internal Server Error if there is a problem retrieving notes"
+// @Router /notes [get]
 func (nc *NoteController) getNotesByDateRangeHandler(c *gin.Context) {
 	start, err := time.Parse(time.RFC3339, c.Query("start"))
 	if err != nil {
