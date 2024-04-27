@@ -1,4 +1,4 @@
-package handlers
+package http
 
 import (
 	"net/http"
@@ -8,12 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AuthHandler struct {
-	authService usecase.AuthService
+type AuthController struct {
+	Service usecase.AuthService
 }
 
-func NewAuthHandler(auth usecase.AuthService) AuthHandler {
-	return AuthHandler{auth}
+func NewAuthController(auth usecase.AuthService) AuthController {
+	return AuthController{auth}
 }
 
 type UserRequestBody struct {
@@ -28,7 +28,7 @@ const (
 	TOKEN_IS_NOT_VALID     = "Token is not valid"
 )
 
-func (ah *AuthHandler) AuthByLogin(c *gin.Context) {
+func (ah *AuthController) AuthByLogin(c *gin.Context) {
 	var requestBody UserRequestBody
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -36,7 +36,7 @@ func (ah *AuthHandler) AuthByLogin(c *gin.Context) {
 	}
 	user := entity.User{Login: requestBody.Login, Password: requestBody.Password}
 
-	token, err := ah.authService.Auth(c.Request.Context(), user)
+	token, err := ah.Service.Auth(c.Request.Context(), user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
 		return
@@ -49,7 +49,7 @@ func (ah *AuthHandler) AuthByLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, token)
 }
 
-func (ah *AuthHandler) AuthByToken(c *gin.Context) {
+func (ah *AuthController) AuthByToken(c *gin.Context) {
 	type RequestBody struct {
 		Token string `json:"token"`
 	}
@@ -58,7 +58,7 @@ func (ah *AuthHandler) AuthByToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := ah.authService.AuthByToken(c, requestBody.Token)
+	user, err := ah.Service.AuthByToken(c, requestBody.Token)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
 	}
@@ -68,13 +68,13 @@ func (ah *AuthHandler) AuthByToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": user.Id, "login": user.Login})
 }
 
-func (ah *AuthHandler) Register(c *gin.Context) {
+func (ah *AuthController) Register(c *gin.Context) {
 	var requestBody UserRequestBody
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	status, err := ah.authService.Register(c, entity.User{Login: requestBody.Login, Password: requestBody.Password})
+	status, err := ah.Service.Register(c, entity.User{Login: requestBody.Login, Password: requestBody.Password})
 
 	if err != nil || status == usecase.Error {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
