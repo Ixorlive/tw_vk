@@ -21,13 +21,6 @@ type UserRequestBody struct {
 	Password string `json:"password"`
 }
 
-const (
-	// errors msgs
-	INTERNAL_SERVER_ERROR  = "Internal server error. Please try again later."
-	INCORRECT_LOGIN_OR_PWD = "Incorrect login or password"
-	TOKEN_IS_NOT_VALID     = "Token is not valid"
-)
-
 // AuthByLogin authenticates a user by their login credentials.
 // @Summary Authenticate by login
 // @Description Authenticates users by login and password, returns a JWT token if successful.
@@ -49,12 +42,12 @@ func (c *AuthController) AuthByLogin(ctx *gin.Context) {
 
 	token, err := c.Service.Auth(ctx.Request.Context(), user)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if token == nil {
-		ctx.JSON(http.StatusOK, gin.H{"error": INCORRECT_LOGIN_OR_PWD})
+		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	}
 
 	ctx.JSON(http.StatusOK, token)
@@ -81,10 +74,10 @@ func (c *AuthController) AuthByToken(ctx *gin.Context) {
 	}
 	user, err := c.Service.AuthByToken(ctx, requestBody.Token)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 	if user.Login == "" {
-		ctx.JSON(http.StatusOK, gin.H{"error": TOKEN_IS_NOT_VALID})
+		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	}
 	ctx.JSON(http.StatusOK, gin.H{"id": user.Id, "login": user.Login})
 }
@@ -109,11 +102,11 @@ func (c *AuthController) Register(ctx *gin.Context) {
 	status, err := c.Service.Register(ctx, entity.User{Login: requestBody.Login, Password: requestBody.Password})
 
 	if err != nil || status == usecase.Error {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if status == usecase.IncorrectLoginOrPassword {
-		ctx.JSON(http.StatusOK, gin.H{"error": INCORRECT_LOGIN_OR_PWD})
+		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	if status == usecase.UserExists {
