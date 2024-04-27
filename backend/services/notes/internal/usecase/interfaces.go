@@ -2,29 +2,27 @@ package usecase
 
 import (
 	"context"
+	"time"
 
-	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/entity"
-	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/usecase/jwt"
-)
-
-type RegistrationStatus int
-
-const (
-	Success RegistrationStatus = iota
-	UserExists
-	IncorrectLoginOrPassword
-	Error
+	"github.com/Ixorlive/tw_vk/backend/services/notes/internal/entity"
 )
 
 type (
-	AuthService interface {
-		Auth(context.Context, entity.User) (*jwt.AccessToken, error)
-		AuthByToken(context.Context, string) (entity.User, error)
-		Register(context.Context, entity.User) (RegistrationStatus, error)
+	NoteRepo interface {
+		CreateNote(ctx context.Context, note entity.Note) (entity.Note, error)
+		UpdateNote(ctx context.Context, note entity.Note) (entity.Note, error)
+		DeleteNote(ctx context.Context, id int) error
+		FindNoteByID(ctx context.Context, id int) (entity.Note, error)
+		FindNotesByUserID(ctx context.Context, userID int) ([]entity.Note, error)
+		FindNotesByDateRange(ctx context.Context, start, end time.Time) ([]entity.Note, error)
 	}
 
-	UserRepo interface {
-		FindByLogin(context.Context, string) (entity.User, error)
-		AddUser(context.Context, entity.User) (bool, error)
+	NoteService interface {
+		CreateNote(ctx context.Context, userID int, content string) (entity.Note, error)
+		UpdateNote(ctx context.Context, noteID int, userID int, content string) (entity.Note, error)
+		DeleteNote(ctx context.Context, noteID int, userID int) error
+		GetNoteByID(ctx context.Context, noteID int, userID int) (entity.Note, error)
+		GetNotesByUserID(ctx context.Context, userID int) ([]entity.Note, error)
+		GetNotesByDateRange(ctx context.Context, userID int, start, end time.Time) ([]entity.Note, error)
 	}
 )
