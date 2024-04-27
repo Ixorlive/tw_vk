@@ -14,7 +14,7 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
-      POSTGRES_DB: accounts
+      POSTGRES_DB: notes
       POSTGRES_USER: vk
       POSTGRES_PASSWORD: vk
     ports:
