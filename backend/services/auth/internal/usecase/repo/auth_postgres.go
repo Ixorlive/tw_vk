@@ -20,7 +20,7 @@ func New(pg *postgres.Postgres) usecase.UserRepo {
 
 func (r *PGUserRepo) FindByLogin(ctx context.Context, login string) (entity.User, error) {
 	query, _, err := r.Builder.
-		Select("login", "password").
+		Select("id", "login", "password").
 		From("Users").
 		Where(squirrel.Eq{"login": login}).
 		ToSql()
@@ -39,10 +39,12 @@ func (r *PGUserRepo) FindByLogin(ctx context.Context, login string) (entity.User
 	// user can be not found - return empty User
 	for rows.Next() {
 		var lg, password string
-		err = rows.Scan(&lg, &password)
+		var id uint64
+		err = rows.Scan(&id, &lg, &password)
 		if err != nil {
 			return user, fmt.Errorf("error scanning row: %w", err)
 		}
+		user.Id = id
 		user.Login = lg
 		user.Password = password
 		break

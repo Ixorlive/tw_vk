@@ -7,6 +7,7 @@ import (
 var jwtKey = []byte("vk_love")
 
 type Claims struct {
+	Id    uint64 `json:"id"`
 	Login string `json:"login"`
 	jwt.RegisteredClaims
 }

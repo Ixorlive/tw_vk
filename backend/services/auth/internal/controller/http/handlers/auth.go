@@ -21,6 +21,13 @@ type UserRequestBody struct {
 	Password string `json:"password"`
 }
 
+const (
+	// errors msgs
+	INTERNAL_SERVER_ERROR  = "Internal server error. Please try again later."
+	INCORRECT_LOGIN_OR_PWD = "Incorrect login or password"
+	TOKEN_IS_NOT_VALID     = "Token is not valid"
+)
+
 func (ah *AuthHandler) AuthByLogin(c *gin.Context) {
 	var requestBody UserRequestBody
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -31,12 +38,12 @@ func (ah *AuthHandler) AuthByLogin(c *gin.Context) {
 
 	token, err := ah.authService.Auth(c.Request.Context(), user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
 		return
 	}
 
 	if token == nil {
-		c.JSON(http.StatusOK, gin.H{"error": "Incorrect login or password"})
+		c.JSON(http.StatusOK, gin.H{"error": INCORRECT_LOGIN_OR_PWD})
 	}
 
 	c.JSON(http.StatusOK, token)
@@ -53,12 +60,12 @@ func (ah *AuthHandler) AuthByToken(c *gin.Context) {
 	}
 	user, err := ah.authService.AuthByToken(c, requestBody.Token)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
 	}
 	if user.Login == "" {
-		c.JSON(http.StatusOK, gin.H{"error": "Token is not valid"})
+		c.JSON(http.StatusOK, gin.H{"error": TOKEN_IS_NOT_VALID})
 	}
-	c.JSON(http.StatusOK, gin.H{"login": user.Login})
+	c.JSON(http.StatusOK, gin.H{"id": user.Id, "login": user.Login})
 }
 
 func (ah *AuthHandler) Register(c *gin.Context) {
@@ -70,11 +77,11 @@ func (ah *AuthHandler) Register(c *gin.Context) {
 	status, err := ah.authService.Register(c, entity.User{Login: requestBody.Login, Password: requestBody.Password})
 
 	if err != nil || status == usecase.Error {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": INTERNAL_SERVER_ERROR})
 		return
 	}
 	if status == usecase.IncorrectLoginOrPassword {
-		c.JSON(http.StatusOK, gin.H{"error": "Incorrect login or password"})
+		c.JSON(http.StatusOK, gin.H{"error": INCORRECT_LOGIN_OR_PWD})
 		return
 	}
 	if status == usecase.UserExists {

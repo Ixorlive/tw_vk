@@ -3,6 +3,7 @@ package jwt
 import (
 	"time"
 
+	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/entity"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -19,12 +20,13 @@ func NewJWTGenerator(signingMethod jwt.SigningMethod) JWTGenerator {
 }
 
 // Generate generates an AccessToken using the username and role claims.
-func (gen *JWTGenerator) Generate(login string) (*AccessToken, error) {
+func (gen *JWTGenerator) Generate(user entity.User) (*AccessToken, error) {
 	token := jwt.New(gen.signingMethod)
 	claims := Claims{}
 
 	// set custom claims
-	claims.Login = login
+	claims.Id = user.Id
+	claims.Login = user.Login
 
 	// set standard claims
 	now := time.Now()

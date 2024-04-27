@@ -32,16 +32,16 @@ func (a *BasicAuthService) Auth(ctx context.Context, user entity.User) (*jwt.Acc
 	if foundUser.Login == "" || crypto.CheckPasswordHash(user.Password, foundUser.Password) {
 		return nil, fmt.Errorf("Incorrect Login or Password")
 	}
-	jwtToken, err := a.jwtGenerator.Generate(user.Login)
+	jwtToken, err := a.jwtGenerator.Generate(user)
 	return jwtToken, nil
 }
 
 func (a *BasicAuthService) AuthByToken(ctx context.Context, jwtToken string) (entity.User, error) {
-	login, err := a.jwtValidator.ValidateToken(jwtToken)
+	user, err := a.jwtValidator.ValidateToken(jwtToken)
 	if err != nil {
 		return entity.User{}, err
 	}
-	return entity.User{Login: login}, nil
+	return user, nil
 }
 
 func (a *BasicAuthService) Register(ctx context.Context, newUser entity.User) (RegistrationStatus, error) {
