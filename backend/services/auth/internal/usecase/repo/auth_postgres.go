@@ -6,7 +6,6 @@ import (
 	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/entity"
 	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/usecase"
 	"github.com/Ixorlive/tw_vk/backend/services/auth/pkg/postgres"
-	"github.com/Masterminds/squirrel"
 	"golang.org/x/net/context"
 )
 
@@ -19,18 +18,17 @@ func New(pg *postgres.Postgres) usecase.UserRepo {
 }
 
 func (r *PGUserRepo) FindByLogin(ctx context.Context, login string) (entity.User, error) {
-	query, _, err := r.Builder.
+	query, args, err := r.Builder.
 		Select("id", "login", "password").
 		From("Users").
-		Where(squirrel.Eq{"login": login}).
+		Where("login = ?", login).
 		ToSql()
-
 	var user entity.User
 
 	if err != nil {
 		return user, fmt.Errorf("error building query: %w", err)
 	}
-	rows, err := r.Pool.Query(ctx, query)
+	rows, err := r.Pool.Query(ctx, query, args...)
 	if err != nil {
 		return user, fmt.Errorf("error executing query: %w", err)
 	}
@@ -57,12 +55,14 @@ func (r *PGUserRepo) FindByLogin(ctx context.Context, login string) (entity.User
 }
 
 func (r *PGUserRepo) AddUser(ctx context.Context, user entity.User) (bool, error) {
-	query, _, err := r.Builder.Insert("Users").Columns("login", "password").
+	query, args, err := r.Builder.
+		Insert("Users").
+		Columns("login", "password").
 		Values(user.Login, user.Password).ToSql()
 	if err != nil {
 		return false, fmt.Errorf("error building query: %w", err)
 	}
-	_, err = r.Pool.Query(ctx, query)
+	_, err = r.Pool.Query(ctx, query, args...)
 	if err != nil {
 		return false, fmt.Errorf("error executing query: %w", err)
 	}
