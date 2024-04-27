@@ -1,0 +1,115 @@
+definitions:
+  http.UserRequestBody:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates users by login and password, returns a JWT token
+        if successful.
+      parameters:
+      - description: Login and Password
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/http.UserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JWT Token if authentication is successful
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request if the request body cannot be parsed
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error for any server issues
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Authenticate by login
+      tags:
+      - Authentication
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user with a login and password, returns a status
+        message.
+      parameters:
+      - description: Login and Password
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/http.UserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK status if registration is successful, or an error message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request if the request body cannot be parsed
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error for any server issues
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Authentication
+  /token:
+    post:
+      consumes:
+      - application/json
+      description: Verifies the JWT token and returns user details if the token is
+        valid.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User details if token is valid
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request if the request body cannot be parsed
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error for any server issues
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Authenticate by token
+      tags:
+      - Authentication
+swagger: "2.0"

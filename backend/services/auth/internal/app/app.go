@@ -21,5 +21,5 @@ func Run(cfg *config.Config) {
 	authService := usecase.NewAuthService(repo.New(pg))
 
 	router := http.NewRouter(authService)
-	router.Run(cfg.HTTP.Port)
+	router.Run(":" + cfg.HTTP.Port)
 }

@@ -1,0 +1,173 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/login": {
+            "post": {
+                "description": "Authenticates users by login and password, returns a JWT token if successful.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Authenticate by login",
+                "parameters": [
+                    {
+                        "description": "Login and Password",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JWT Token if authentication is successful",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request if the request body cannot be parsed",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error for any server issues",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "Registers a new user with a login and password, returns a status message.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "Login and Password",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UserRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK status if registration is successful, or an error message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request if the request body cannot be parsed",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error for any server issues",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/token": {
+            "post": {
+                "description": "Verifies the JWT token and returns user details if the token is valid.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Authenticate by token",
+                "responses": {
+                    "200": {
+                        "description": "User details if token is valid",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request if the request body cannot be parsed",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error for any server issues",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "http.UserRequestBody": {
+            "type": "object",
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
