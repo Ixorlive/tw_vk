@@ -19,5 +19,5 @@ func Run(cfg *config.Config) {
 	defer pg.Close()
 	noteService := usecase.NewNoteService(repo.NewPGNoteRepo(pg))
 	router := http.NewRouter(noteService)
-	router.Run(cfg.HTTP.Port)
+	router.Run(":" + cfg.HTTP.Port)
 }
