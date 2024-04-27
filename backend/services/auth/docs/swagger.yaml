@@ -1,4 +1,9 @@
 definitions:
+  http.TokenRequestBody:
+    properties:
+      token:
+        type: string
+    type: object
   http.UserRequestBody:
     properties:
       login:
@@ -89,6 +94,13 @@ paths:
       - application/json
       description: Verifies the JWT token and returns user details if the token is
         valid.
+      parameters:
+      - description: Login and Password
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/http.TokenRequestBody'
       produces:
       - application/json
       responses:

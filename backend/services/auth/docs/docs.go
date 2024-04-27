@@ -138,6 +138,17 @@ const docTemplate = `{
                     "Authentication"
                 ],
                 "summary": "Authenticate by token",
+                "parameters": [
+                    {
+                        "description": "Login and Password",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.TokenRequestBody"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "User details if token is valid",
@@ -169,6 +180,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "http.TokenRequestBody": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "http.UserRequestBody": {
             "type": "object",
             "properties": {

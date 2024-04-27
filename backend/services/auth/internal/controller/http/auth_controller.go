@@ -47,10 +47,15 @@ func (c *AuthController) AuthByLogin(ctx *gin.Context) {
 	}
 
 	if token == nil {
-		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusOK, gin.H{"error": "Invalid token"})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, token)
+	ctx.JSON(http.StatusOK, gin.H{"token": token.Token})
+}
+
+type TokenRequestBody struct {
+	Token string `json:"token"`
 }
 
 // AuthByToken authenticates a user by a JWT token.
@@ -59,15 +64,13 @@ func (c *AuthController) AuthByLogin(ctx *gin.Context) {
 // @Tags Authentication
 // @Accept json
 // @Produce json
+// @Param requestBody body TokenRequestBody true "Login and Password"
 // @Success 200 {object} map[string]interface{} "User details if token is valid"
 // @Failure 400 {object} map[string]string "Bad request if the request body cannot be parsed"
 // @Failure 500 {object} map[string]string "Internal Server Error for any server issues"
 // @Router /token [post]
 func (c *AuthController) AuthByToken(ctx *gin.Context) {
-	type RequestBody struct {
-		Token string `json:"token"`
-	}
-	var requestBody RequestBody
+	var requestBody TokenRequestBody
 	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -77,7 +80,7 @@ func (c *AuthController) AuthByToken(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 	if user.Login == "" {
-		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusOK, gin.H{"error": "Wrong Login or Password"})
 	}
 	ctx.JSON(http.StatusOK, gin.H{"id": user.Id, "login": user.Login})
 }
@@ -106,7 +109,7 @@ func (c *AuthController) Register(ctx *gin.Context) {
 		return
 	}
 	if status == usecase.IncorrectLoginOrPassword {
-		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusOK, gin.H{"error": "Wrong Login or Password"})
 		return
 	}
 	if status == usecase.UserExists {
