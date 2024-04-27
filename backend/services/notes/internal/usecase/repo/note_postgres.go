@@ -7,6 +7,7 @@ import (
 	"github.com/Ixorlive/tw_vk/backend/services/notes/internal/entity"
 	"github.com/Ixorlive/tw_vk/backend/services/notes/internal/usecase"
 	"github.com/Ixorlive/tw_vk/backend/services/notes/pkg/postgres"
+	"github.com/Masterminds/squirrel"
 )
 
 type PGNoteRepo struct {
@@ -61,7 +62,7 @@ func (repo *PGNoteRepo) FindNoteByID(ctx context.Context, id int) (entity.Note, 
 func (repo *PGNoteRepo) UpdateNote(ctx context.Context, note entity.Note) (entity.Note, error) {
 	sql, args, err := repo.Builder.Update("Notes").
 		Set("content", note.Content).
-		Set("updated_at", "CURRENT_TIMESTAMP").
+		Set("updated_at", squirrel.Expr("CURRENT_TIMESTAMP")).
 		Where("id = ?", note.ID).
 		Suffix("RETURNING id, user_id, content, created_at, updated_at").
 		ToSql()
