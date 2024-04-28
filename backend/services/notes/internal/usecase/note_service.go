@@ -18,6 +18,10 @@ func NewNoteService(repo NoteRepo) NoteService {
 	}
 }
 
+func (s *BasicNoteService) GetNotes(ctx context.Context) ([]entity.Note, error) {
+	return s.repo.GetNotes(ctx)
+}
+
 func (s *BasicNoteService) CreateNote(ctx context.Context, userID int, content string) (entity.Note, error) {
 	note := entity.Note{
 		UserID:  userID,
@@ -38,14 +42,7 @@ func (s *BasicNoteService) UpdateNote(ctx context.Context, noteID int, userID in
 	return s.repo.UpdateNote(ctx, note)
 }
 
-func (s *BasicNoteService) DeleteNote(ctx context.Context, noteID int, userID int) error {
-	note, err := s.repo.FindNoteByID(ctx, noteID)
-	if err != nil {
-		return err
-	}
-	if note.UserID != userID {
-		return errors.New("unauthorized to delete this note")
-	}
+func (s *BasicNoteService) DeleteNote(ctx context.Context, noteID int) error {
 	return s.repo.DeleteNote(ctx, noteID)
 }
 

@@ -37,12 +37,12 @@ func (r *PGUserRepo) FindByLogin(ctx context.Context, login string) (entity.User
 	// user can be not found - return empty User
 	for rows.Next() {
 		var lg, password string
-		var id uint64
+		var id int
 		err = rows.Scan(&id, &lg, &password)
 		if err != nil {
 			return user, fmt.Errorf("error scanning row: %w", err)
 		}
-		user.Id = id
+		user.Id = uint64(id)
 		user.Login = lg
 		user.Password = password
 		break

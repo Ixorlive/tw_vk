@@ -32,7 +32,7 @@ func (a *BasicAuthService) Auth(ctx context.Context, user entity.User) (*jwt.Acc
 	if foundUser.Login == "" || crypto.CheckPasswordHash(user.Password, foundUser.Password) {
 		return nil, fmt.Errorf("Incorrect Login or Password")
 	}
-	jwtToken, err := a.jwtGenerator.Generate(user)
+	jwtToken, err := a.jwtGenerator.Generate(foundUser)
 	return jwtToken, nil
 }
 

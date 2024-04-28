@@ -17,49 +17,23 @@ const docTemplate = `{
     "paths": {
         "/notes": {
             "get": {
-                "description": "Retrieves all notes for a specific user within a specified date range.",
+                "description": "Get all notes from db",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Notes"
                 ],
-                "summary": "Get notes by date range",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Start date (RFC3339 format)",
-                        "name": "start",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "End date (RFC3339 format)",
-                        "name": "end",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
+                "summary": "Get all notes",
                 "responses": {
-                    "200": {
-                        "description": "List of notes within the date range",
+                    "201": {
+                        "description": "List of all notes",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entity.Note"
-                            }
+                            "$ref": "#/definitions/entity.Note"
                         }
                     },
                     "400": {
-                        "description": "Bad request if date parameters are invalid",
+                        "description": "Bad request if the JSON body cannot be parsed",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -68,7 +42,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error if there is a problem retrieving notes",
+                        "description": "Internal Server Error if there is a problem creating the note",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -97,7 +71,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.Note"
+                            "$ref": "#/definitions/http.CreateNoteParam"
                         }
                     }
                 ],
@@ -199,7 +173,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.Note"
+                            "$ref": "#/definitions/http.CreateNoteParam"
                         }
                     }
                 ],
@@ -271,6 +245,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/notes_range": {
+            "get": {
+                "description": "Retrieves all notes for a specific user within a specified date range.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notes"
+                ],
+                "summary": "Get notes by date range",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date (RFC3339 format)",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date (RFC3339 format)",
+                        "name": "end",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of notes within the date range",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Note"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request if date parameters are invalid",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error if there is a problem retrieving notes",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userID}/notes": {
             "get": {
                 "description": "Retrieves all notes for a specific user.",
@@ -327,6 +365,17 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "http.CreateNoteParam": {
+            "type": "object",
+            "properties": {
+                "content": {
                     "type": "string"
                 },
                 "user_id": {

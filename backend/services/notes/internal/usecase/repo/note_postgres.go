@@ -18,6 +18,34 @@ func NewPGNoteRepo(pg *postgres.Postgres) usecase.NoteRepo {
 	return &PGNoteRepo{pg}
 }
 
+func (repo *PGNoteRepo) GetNotes(ctx context.Context) ([]entity.Note, error) {
+	sql, args, err := repo.Builder.
+		Select("id, user_id, content, created_at, updated_at").
+		From("Notes").
+		ToSql()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := repo.Pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var notes []entity.Note
+	for rows.Next() {
+		var note entity.Note
+		if err := rows.Scan(&note.ID, &note.UserID, &note.Content, &note.CreatedAt, &note.UpdatedAt); err != nil {
+			return nil, err
+		}
+		notes = append(notes, note)
+	}
+
+	return notes, nil
+}
+
 func (repo *PGNoteRepo) CreateNote(ctx context.Context, note entity.Note) (entity.Note, error) {
 	sql, args, err := repo.Builder.Insert("Notes").
 		Columns("user_id", "content").
