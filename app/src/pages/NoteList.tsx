@@ -16,6 +16,22 @@ const NoteList: React.FC<NoteListProps> = ({ user }) => {
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [currentNote, setCurrentNote] = useState<NoteType | null>(null);
+    const [filteredNotes, setFilteredNotes] = useState<NoteType[]>([]);
+
+    const applyFilters = (days: number | null) => {
+        let tempFiltered = notes;
+        if (activeTab === 'My') {
+            tempFiltered = tempFiltered.filter(note => note.user_id === user.id);
+        }
+        if (days !== null) {
+            const now = new Date();
+            tempFiltered = tempFiltered.filter(note => {
+                const createdAt = new Date(note.created_at);
+                return (now.getTime() - createdAt.getTime()) / (1000 * 3600 * 24) <= days;
+            });
+        }
+        setFilteredNotes(tempFiltered);
+    };
 
     useEffect(() => {
         const fetchAllNotes = async () => {
@@ -28,6 +44,7 @@ const NoteList: React.FC<NoteListProps> = ({ user }) => {
                 const data = await response.json();
 
                 setNotes(data);
+                setFilteredNotes(data)
             } catch (error) {
                 console.error('Error fetching notes:', error);
             } finally {
@@ -38,9 +55,6 @@ const NoteList: React.FC<NoteListProps> = ({ user }) => {
         fetchAllNotes();
     }, []);
 
-    const filteredNotes = activeTab === 'My' && user.id !== 0
-        ? notes.filter(note => note.user_id === user.id)
-        : notes;
 
     const handleEditClick = (note: NoteType) => {
         setCurrentNote(note);
@@ -61,13 +75,22 @@ const NoteList: React.FC<NoteListProps> = ({ user }) => {
         <div>
             <h1>List of notes</h1>
             <div>
-                <button onClick={() => setActiveTab('All')}>All</button>
+                <button onClick={() => { setActiveTab('All'); setFilteredNotes(notes) }}>All</button>
                 {user.id !== 0 && (
                     <>
-                        <button onClick={() => setActiveTab('My')}>My</button>
+                        <button onClick={() => {
+                            setActiveTab('My');
+                            setFilteredNotes(notes.filter(note => note.user_id === user.id))
+                        }}>My</button>
                         <button onClick={handleNewNoteClick}>+ New Note</button>
                     </>
                 )}
+            </div>
+            <div>
+                <p> Filter by last</p>
+                <button onClick={() => applyFilters(1)}>day</button>
+                <button onClick={() => applyFilters(3)}>3 days</button>
+                <button onClick={() => applyFilters(30)}>month</button>
             </div>
             {loading ? (
                 <p>Loading...</p>
