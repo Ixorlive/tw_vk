@@ -34,7 +34,7 @@ const NoteList: React.FC<NoteListProps> = ({ user, notes, showControlButtons }) 
         <div>
             {user.id !== 0 && <button onClick={handleNewNoteClick}>Add new note</button>}
             {notes.map(note => (
-                <Note note={note} editable={showControlButtons} onEdit={() => handleEditClick(note)} />
+                <Note key={note.id} note={note} editable={showControlButtons} onEdit={() => handleEditClick(note)} />
             ))}
             {showModal && (
                 <Modal onClose={closeModal}>

@@ -43,7 +43,6 @@ const Main: React.FC<MainPageProps> = ({ user }) => {
     };
 
     const filteredNotes = notes.filter(note => {
-        console.log(timeFilter)
         var cond = filter === 'all' || note.user_id === user.id;
         if (timeFilter !== null) {
             const createdAt = new Date(note.created_at);

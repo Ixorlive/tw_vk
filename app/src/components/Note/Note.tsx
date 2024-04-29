@@ -24,7 +24,13 @@ const handleDeleteNote = async (noteId: number) => {
     }
 }
 
-function Note({ note, editable, onEdit }: { note: NoteType, editable: Boolean, onEdit: any }) {
+interface NoteProps {
+    note: NoteType;
+    editable: Boolean;
+    onEdit: any;
+}
+
+const Note: React.FC<NoteProps> = ({ note, editable, onEdit }) => {
     return (
         <div className="note">
             <h2>User: {note.user_id}</h2>
