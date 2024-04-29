@@ -3,25 +3,20 @@ import { NOTE_API_CREATE, NOTE_API_EDIT } from '../../config';
 import { NoteType } from '../../entity/NoteType';
 import { UserType } from '../../entity/UserType';
 
-function NoteForm({ user, note, onSave }: { user: UserType, note: NoteType | null, onSave: any }) {
+interface NoteFormProps {
+    user?: UserType
+    note?: NoteType
+
+    onSave: any
+}
+
+const NoteForm: React.FC<NoteFormProps> = ({ user, note, onSave }) => {
     const [noteContent, setNoteContent] = useState('');
-    const isNewNote = note === null;
+    const isNewNote = note === undefined;
 
     useEffect(() => {
         if (!isNewNote) {
-            const fetchNoteDetails = async () => {
-                try {
-                    const response = await fetch(`${NOTE_API_EDIT}/${note.id}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch note details');
-                    }
-                    const data = await response.json();
-                    setNoteContent(data.content);
-                } catch (error) {
-                    console.error('Error fetching note details:', error);
-                }
-            };
-            fetchNoteDetails();
+            setNoteContent(note.content)
         }
     }, [note, isNewNote]);
 
@@ -29,6 +24,7 @@ function NoteForm({ user, note, onSave }: { user: UserType, note: NoteType | nul
         event.preventDefault();
         const url = isNewNote ? NOTE_API_CREATE : `${NOTE_API_EDIT}/${note.id}`;
         const method = isNewNote ? 'POST' : 'PUT';
+        const user_id = isNewNote ? user!.id : note.user_id
 
         try {
             const response = await fetch(url, {
@@ -36,7 +32,7 @@ function NoteForm({ user, note, onSave }: { user: UserType, note: NoteType | nul
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ content: noteContent, user_id: user.id }),
+                body: JSON.stringify({ content: noteContent, user_id: user_id }),
             });
             if (!response.ok) {
                 throw new Error(isNewNote ? 'Failed to create note' : 'Failed to update note');

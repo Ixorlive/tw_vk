@@ -1,0 +1,40 @@
+header {
+    background: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-tabs button,
+.filter-tabs select {
+    background: transparent;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: #333;
+    border-radius: 4px;
+}
+
+.filter-tabs button.active {
+    color: #6200ea;
+    border-bottom: 2px solid #6200ea;
+}
+
+.filter-tabs select {
+    padding: 10px;
+    border: 2px solid #ccc;
+}

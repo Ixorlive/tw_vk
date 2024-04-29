@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import NoteList from './pages/NoteList';
+import Main from './pages/Main';
 import useToken from './hooks/UseToken';
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
                     element={user.id === 0 ? <Register /> : <Navigate to="/" />} />
                 <Route
                     path="/"
-                    element={<NoteList user={user} />}
+                    element={<Main user={user} />}
                 />
             </Routes>
         </BrowserRouter>

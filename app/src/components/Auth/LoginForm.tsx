@@ -30,7 +30,7 @@ const LoginForm = () => {
             if (data.token) {
                 localStorage.setItem('token', data.token);
                 console.log("Logged in successfully");
-                navigate("/")
+                window.location.reload()
             } else {
                 throw new Error('No token received');
             }
