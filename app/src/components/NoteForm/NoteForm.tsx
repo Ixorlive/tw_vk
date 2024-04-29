@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { NOTE_API_CREATE, NOTE_API_EDIT } from '../../config';
 import { NoteType } from '../../entity/NoteType';
 import { UserType } from '../../entity/UserType';

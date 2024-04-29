@@ -1,23 +1,27 @@
 package http
 
 import (
+	"fmt"
+	"strings"
+	"time"
+
 	_ "github.com/Ixorlive/tw_vk/backend/services/auth/docs"
 	"github.com/Ixorlive/tw_vk/backend/services/auth/internal/usecase"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"time"
 )
 
-func NewRouter(authService usecase.AuthService) *gin.Engine {
+func NewRouter(authService usecase.AuthService, cors_allow_origins string) *gin.Engine {
 	router := gin.Default()
 	// swagger
 	swaggerHandler := ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "DISABLE_SWAGGER_HTTP_HANDLER")
 	router.GET("/swagger/*any", swaggerHandler)
 
+	fmt.Println(cors_allow_origins)
 	config := cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, //TODO: move to config
+		AllowOrigins:     strings.Split(cors_allow_origins, ","),
 		AllowMethods:     []string{"POST", "GET"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -26,6 +30,7 @@ func NewRouter(authService usecase.AuthService) *gin.Engine {
 	}
 
 	router.Use(cors.New(config))
+
 	controller := NewAuthController(authService)
 
 	router.POST("/login", controller.AuthByLogin)

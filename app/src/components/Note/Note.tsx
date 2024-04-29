@@ -23,7 +23,7 @@ const handleDeleteNote = async (noteId: number) => {
     }
 }
 
-function Note({ note, editable: editable, onEdit }: { note: NoteType, editable: Boolean, onEdit: any }) {
+function Note({ note, editable, onEdit }: { note: NoteType, editable: Boolean, onEdit: any }) {
     return (
         <div>
             <h4>User: {note.user_id}</h4>

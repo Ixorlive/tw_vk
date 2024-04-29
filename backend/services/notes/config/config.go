@@ -20,7 +20,8 @@ type (
 
 	// HTTP -.
 	HTTP struct {
-		Port string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
+		Port               string `env-required:"true" yaml:"port" env:"HTTP_PORT"`
+		Cors_allow_origins string `env-required:"true" env:"CORS_ALLOW_ORIGINS"`
 	}
 
 	// Log -.

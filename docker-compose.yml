@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: notes
+      POSTGRES_USER: vk
+      POSTGRES_PASSWORD: vk
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  auth_service:
+    build:
+      context: ./backend/services/auth
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      GIN_MODE: release
+      PG_URL: postgres://vk:vk@db:5432/notes
+      CORS_ALLOW_ORIGINS: "http://web_app:3000,http://localhost:3000"
+    ports:
+      - "8082:8082"
+
+  notes_service:
+    build:
+      context: ./backend/services/notes
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      GIN_MODE: release
+      PG_URL: postgres://vk:vk@db:5432/notes
+      CORS_ALLOW_ORIGINS: "http://web_app:3000,http://localhost:3000"
+    ports:
+      - "8081:8081"
+
+  web_app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    depends_on:
+      - auth_service
+      - notes_service
+    environment:
+      AUTH_SERVICE_URL: "http://auth_service:8082"
+      NOTES_SERVICE_URL: "http://notes_service:8081"
+    ports:
+      - "3000:3000"

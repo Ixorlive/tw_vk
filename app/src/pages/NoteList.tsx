@@ -18,21 +18,6 @@ const NoteList: React.FC<NoteListProps> = ({ user }) => {
     const [currentNote, setCurrentNote] = useState<NoteType | null>(null);
     const [filteredNotes, setFilteredNotes] = useState<NoteType[]>([]);
 
-    const applyFilters = (days: number | null) => {
-        let tempFiltered = notes;
-        if (activeTab === 'My') {
-            tempFiltered = tempFiltered.filter(note => note.user_id === user.id);
-        }
-        if (days !== null) {
-            const now = new Date();
-            tempFiltered = tempFiltered.filter(note => {
-                const createdAt = new Date(note.created_at);
-                return (now.getTime() - createdAt.getTime()) / (1000 * 3600 * 24) <= days;
-            });
-        }
-        setFilteredNotes(tempFiltered);
-    };
-
     useEffect(() => {
         const fetchAllNotes = async () => {
             setLoading(true);
@@ -41,7 +26,7 @@ const NoteList: React.FC<NoteListProps> = ({ user }) => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch notes');
                 }
-                const data = await response.json();
+                const data = await response.json() || [];
 
                 setNotes(data);
                 setFilteredNotes(data)
@@ -55,6 +40,24 @@ const NoteList: React.FC<NoteListProps> = ({ user }) => {
         fetchAllNotes();
     }, []);
 
+    useEffect(() => {
+        applyFilters(null);
+    }, [notes, activeTab]);
+
+    const applyFilters = (days: number | null) => {
+        let tempFiltered = notes;
+        if (activeTab === 'My') {
+            tempFiltered = tempFiltered.filter(note => note.user_id === user.id);
+        }
+        if (days !== null && tempFiltered) {
+            const now = new Date();
+            tempFiltered = tempFiltered.filter(note => {
+                const createdAt = new Date(note.created_at);
+                return (now.getTime() - createdAt.getTime()) / (1000 * 3600 * 24) <= days;
+            });
+        }
+        setFilteredNotes(tempFiltered);
+    };
 
     const handleEditClick = (note: NoteType) => {
         setCurrentNote(note);

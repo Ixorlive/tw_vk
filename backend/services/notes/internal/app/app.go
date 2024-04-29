@@ -18,6 +18,6 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 	noteService := usecase.NewNoteService(repo.NewPGNoteRepo(pg))
-	router := http.NewRouter(noteService)
+	router := http.NewRouter(noteService, cfg.HTTP.Cors_allow_origins)
 	router.Run(":" + cfg.HTTP.Port)
 }

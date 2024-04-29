@@ -20,6 +20,6 @@ func Run(cfg *config.Config) {
 
 	authService := usecase.NewAuthService(repo.New(pg))
 
-	router := http.NewRouter(authService)
+	router := http.NewRouter(authService, cfg.HTTP.Cors_allow_origins)
 	router.Run(":" + cfg.HTTP.Port)
 }
