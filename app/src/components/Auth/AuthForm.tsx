@@ -52,6 +52,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ isRegister }) => {
 
     return (
         <div className="login-container">
+            <h1>{actionStr}</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label htmlFor="username">Username:</label>
