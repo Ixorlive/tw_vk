@@ -36,8 +36,8 @@ const Note: React.FC<NoteProps> = ({ note, editable, onEdit }) => {
             <h2>User: {note.user_id}</h2>
             <p>{note.content}</p>
             <p>Created {note.created_at}</p>
-            {editable && <button onClick={onEdit}>Edit</button>}
-            {editable && <button onClick={() => { handleDeleteNote(note.id) }}>Delete</button>}
+            {editable && <button className='button small' onClick={onEdit}>Edit</button>}
+            {editable && <button className='button small red' onClick={() => { handleDeleteNote(note.id) }}>Delete</button>}
         </div>
     )
 }

@@ -1,11 +1,10 @@
-import React from 'react';
-import RegisterForm from '../components/Auth/RegisterForm';
+import AuthForm from '../components/Auth/AuthForm';
 
-const Register = () => {
+const Register: React.FC = () => {
     return (
         <div className="register-page">
-            <h1>Register</h1>
-            <RegisterForm />
+            {/* <h1>Register</h1> */}
+            <AuthForm isRegister={true} />
         </div>
     );
 }

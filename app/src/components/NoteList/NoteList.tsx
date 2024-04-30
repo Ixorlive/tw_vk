@@ -4,6 +4,7 @@ import Note from "../Note/Note";
 import Modal from "../Modal/Modal";
 import NoteForm from "../NoteForm/NoteForm";
 import { UserType } from "../../entity/UserType";
+import './NoteList.css'
 
 interface NoteListProps {
     user: UserType
@@ -32,7 +33,7 @@ const NoteList: React.FC<NoteListProps> = ({ user, notes, showControlButtons }) 
     };
     return (
         <div>
-            {user.id !== 0 && <button onClick={handleNewNoteClick}>Add new note</button>}
+            {user.id !== 0 && <button className="button add-note" onClick={handleNewNoteClick}>+ Note</button>}
             {notes.map(note => (
                 <Note key={note.id} note={note} editable={showControlButtons} onEdit={() => handleEditClick(note)} />
             ))}

@@ -1,0 +1,11 @@
+.button.add-note {
+    background: #4caf50;
+    color: white;
+    display: block;
+    width: max-content;
+    margin: 20px auto;
+}
+
+.button.add-note:hover {
+    background: #388e3c;
+}
