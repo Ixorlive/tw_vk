@@ -4,6 +4,7 @@ app:
 
 http:
   port: '8082'
+  cors: "http://localhost:3000"
 
 logger:
   log_level: 'debug'
