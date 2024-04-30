@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
-	_defaultMaxPoolSize  = 1
+	_defaultMaxPoolSize  = 2
 	_defaultConnAttempts = 10
 	_defaultConnTimeout  = time.Second
 )
@@ -42,7 +42,7 @@ func New(url string) (*Postgres, error) {
 	poolCfg.MaxConns = int32(pg.maxPoolSize)
 
 	for pg.connAttempts > 0 {
-		pg.Pool, err = pgxpool.ConnectConfig(context.Background(), poolCfg)
+		pg.Pool, err = pgxpool.NewWithConfig(context.Background(), poolCfg)
 		if err == nil {
 			break
 		}
